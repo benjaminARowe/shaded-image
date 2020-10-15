@@ -1,10 +1,15 @@
-import React from 'react'
+import React from "react";
+import {ShadedImage, GrayscaleImage} from "shaded-image";
 
-import { ExampleComponent } from 'shaded-image'
-import 'shaded-image/dist/index.css'
+import test from "./download.jpeg";
 
-const App = () => {
-  return <ExampleComponent text="Create React Library Example 😄" />
+export default function App() {
+  return (
+    <div className="App">
+      <GrayscaleImage
+	      style={{ color:"white" }}
+        image={test}
+      />
+    </div>
+  );
 }
-
-export default App

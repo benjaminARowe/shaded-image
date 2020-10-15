@@ -1,6 +1,4 @@
-import React from 'react'
-import styles from './styles.module.css'
+import ShadedImage from "./ShadedImage";
+import GrayscaleImage from "./GrayscaleImage";
 
-export const ExampleComponent = ({ text }) => {
-  return <div className={styles.test}>Example Component: {text}</div>
-}
+export {ShadedImage, GrayscaleImage}; 
