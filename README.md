@@ -12,6 +12,7 @@ npm install --save shaded-image
 
 ## Usage
 
+### Inbuilt Components
 You can use one of the inbuilt effect components
 
 ```jsx
@@ -29,7 +30,34 @@ export default function Example() {
 }
 ```
 
-or create your own effect
+### Custom Effects
+You can create your own custom effects by defining a glsl fragment and vertex shader. Uniform and Varying values can be set using initFunction and updateFunction
+
+
+```glsl
+attribute vec3 aVertexPosition;
+attribute vec2 aTextureCoord;
+
+varying highp vec2 vTextureCoord;
+
+void main(void) {
+	gl_Position =  vec4(aVertexPosition, 1.0);
+	vTextureCoord = aTextureCoord;
+}
+
+```
+```glsl
+varying highp vec2 vTextureCoord;
+
+uniform sampler2D uSampler;
+
+void main(void) {
+	lowp vec4 tex = texture2D(uSampler, vTextureCoord);
+	lowp float col = (0.2126 * tex.r + 0.7152 * tex.g + 0.0722*tex.b);
+	gl_FragColor = vec4(col, col, col, tex.a);
+}
+
+```
 
 ```jsx
 import React from "react";
