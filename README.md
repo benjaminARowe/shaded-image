@@ -33,7 +33,7 @@ export default function Example() {
 ### Custom Effects
 You can create your own custom effects by defining a glsl fragment and vertex shader. Uniform and Varying values can be set using initFunction and updateFunction
 
-
+#### vertex.glsl
 ```glsl
 attribute vec3 aVertexPosition;
 attribute vec2 aTextureCoord;
@@ -46,6 +46,8 @@ void main(void) {
 }
 
 ```
+
+#### fragmentGrayscale.glsl
 ```glsl
 varying highp vec2 vTextureCoord;
 
@@ -59,6 +61,7 @@ void main(void) {
 
 ```
 
+#### GrayscaleImage.js
 ```jsx
 import React from "react";
 
