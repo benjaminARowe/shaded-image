@@ -1,6 +1,6 @@
 # shaded-image
 
-> Made with create-react-library
+> Apply a stack of post-processing style shaders to a static image 
 
 [![NPM](https://img.shields.io/npm/v/shaded-image.svg)](https://www.npmjs.com/package/shaded-image) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
@@ -13,15 +13,19 @@ npm install --save shaded-image
 ## Usage
 
 ```jsx
-import React, { Component } from 'react'
+import React from "react";
+import {ShadedImage, GrayscaleImage} from "shaded-image";
 
-import MyComponent from 'shaded-image'
-import 'shaded-image/dist/index.css'
+import test from "./download.jpeg";
 
-class Example extends Component {
-  render() {
-    return <MyComponent />
-  }
+export default function Example() {
+  return (
+    <div className="Example">
+      <GrayscaleImage
+        image={test}
+      />
+    </div>
+  );
 }
 ```
 
