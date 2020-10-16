@@ -115,13 +115,13 @@ function createShaders(gl, shaders) {
 
 function animate(canvas, gl, shaders, texture, buffers) {
   resizeCanvas(canvas, gl)
-  render(gl, shaders, texture, buffers)
+  render(gl, canvas, shaders, texture, buffers)
   window.requestAnimationFrame(() =>
     animate(canvas, gl, shaders, texture, buffers)
   )
 }
 
-function render(gl, shaders, texture, buffers) {
+function render(gl, canvas, shaders, texture, buffers) {
   gl.bindTexture(gl.TEXTURE_2D, texture.texture)
 
   for (let [i, currentProgram] of shaders.entries()) {
