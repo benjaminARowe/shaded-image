@@ -21,6 +21,7 @@ export default function ShadedImage({ style, className, shaders, image }) {
     let compiledShaders = createShaders(gl, shaders)
 
     for (let shader of compiledShaders) {
+	    gl.useProgram(shader.program);
       shader.initFunction({
         program: shader.program,
         context: gl,
