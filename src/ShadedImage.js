@@ -21,7 +21,11 @@ export default function ShadedImage({ style, className, shaders, image }) {
     let compiledShaders = createShaders(gl, shaders)
 
     for (let shader of compiledShaders) {
-	    shader.initFunction({ program: shader.program, context: gl })
+      shader.initFunction({
+        program: shader.program,
+        context: gl,
+        canvas: canvas
+      })
     }
 
     let texture = loadTexture(gl, image)
@@ -125,7 +129,11 @@ function render(gl, shaders, texture, buffers) {
 
     // // Load program into GPU
     gl.useProgram(currentProgram.program)
-    currentProgram.updateFunction({ program: currentProgram.program, context: gl })
+    currentProgram.updateFunction({
+      program: currentProgram.program,
+      context: gl,
+      canvas: canvas 
+    })
 
     // Bind buffers to the current program
     bindBuffers(gl, currentProgram.program, buffers)
