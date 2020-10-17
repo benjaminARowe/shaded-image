@@ -1,6 +1,6 @@
 {
   "name": "shaded-image",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Apply a shader stack to a static image",
   "author": "benjaminarowe",
   "license": "MIT",
