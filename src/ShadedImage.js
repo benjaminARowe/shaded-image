@@ -33,6 +33,8 @@ export default function ShadedImage({ style, className, shaders, image }) {
 
     const fb = gl.createFramebuffer()
 
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
+
     // attach the texture as the first color attachment
     const attachmentPoint = gl.COLOR_ATTACHMENT0
     gl.framebufferTexture2D(
