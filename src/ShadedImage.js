@@ -47,7 +47,7 @@ export default function ShadedImage({ style, className, shaders, image }) {
 
     let buffers = initBuffers(gl)
     animate(canvas, gl, compiledShaders, texture, buffers)
-  }, [canvasRef, shaders, image])
+  }, [canvasRef, image])
 
   return (
     <div>
