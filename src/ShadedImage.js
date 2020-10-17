@@ -20,20 +20,6 @@ export default function ShadedImage({
      * Provides requestAnimationFrame in a cross browser way.
      * paulirish.com/2011/requestanimationframe-for-smart-animating/
      */
-    window.requestAnimationFrame =
-      window.requestAnimationFrame ||
-      (function () {
-        return (
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame ||
-          window.oRequestAnimationFrame ||
-          window.msRequestAnimationFrame ||
-          function (callback, element) {
-            window.setTimeout(callback, 1000 / 60)
-          }
-        )
-      })()
-
     gl.clearColor(0.0, 0.0, 0.0, 1.0)
     gl.enable(gl.DEPTH_TEST)
     gl.depthFunc(gl.LESS)
@@ -82,9 +68,6 @@ export default function ShadedImage({
   function animate(canvas, gl, shaders, texture, buffers) {
     resizeCanvas(canvas, gl)
     render(gl, canvas, shaders, texture, buffers)
-    window.requestAnimationFrame(() =>
-      animate(canvas, gl, shaders, texture, buffers)
-    )
   }
 
   function render(gl, canvas, shaders, texture, buffers) {
@@ -132,29 +115,29 @@ export default function ShadedImage({
         program: shader.program,
         context: gl,
         canvas: canvas,
-	values: values
+        values: values
       })
     }
 
-    let texture = loadTexture(gl, image)
+    let texture = loadTexture(gl, image, () => {
+      const fb = gl.createFramebuffer()
 
-    const fb = gl.createFramebuffer()
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
 
-    gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
+      // attach the texture as the first color attachment
+      const attachmentPoint = gl.COLOR_ATTACHMENT0
+      gl.framebufferTexture2D(
+        gl.FRAMEBUFFER,
+        attachmentPoint,
+        gl.TEXTURE_2D,
+        texture.texture,
+        0
+      )
 
-    // attach the texture as the first color attachment
-    const attachmentPoint = gl.COLOR_ATTACHMENT0
-    gl.framebufferTexture2D(
-      gl.FRAMEBUFFER,
-      attachmentPoint,
-      gl.TEXTURE_2D,
-      texture.texture,
-      0
-    )
-
-    let buffers = initBuffers(gl)
-    animate(canvas, gl, compiledShaders, texture, buffers)
-  }, [canvasRef, image])
+      let buffers = initBuffers(gl)
+      animate(canvas, gl, compiledShaders, texture, buffers)
+    })
+  }, [canvasRef, shaders, image])
 
   return (
     <div>
