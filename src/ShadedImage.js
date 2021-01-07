@@ -5,7 +5,8 @@ import {
   createProgram,
   initBuffers,
   bindBuffers,
-  loadTexture
+  loadTexture,
+  textureFromData
 } from './shaderUtils'
 
 export default function ShadedImage({
@@ -13,6 +14,7 @@ export default function ShadedImage({
   className,
   shaders,
   image,
+  textureData,
   values
 }) {
   function init(canvas, gl) {
@@ -118,8 +120,35 @@ export default function ShadedImage({
         values: values
       })
     }
+    let texture = null
 
-    let texture = loadTexture(gl, image, () => {
+    if (image != null) {
+      console.log('Using Image')
+      texture = loadTexture(gl, image, () => {
+        const fb = gl.createFramebuffer()
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
+
+        // attach the texture as the first color attachment
+        const attachmentPoint = gl.COLOR_ATTACHMENT0
+        gl.framebufferTexture2D(
+          gl.FRAMEBUFFER,
+          attachmentPoint,
+          gl.TEXTURE_2D,
+          texture.texture,
+          0
+        )
+
+        let buffers = initBuffers(gl)
+        animate(canvas, gl, compiledShaders, texture, buffers)
+      })
+    } else if (textureData != null) {
+      texture = textureFromData(
+        gl,
+        textureData.width,
+        textureData.height,
+        textureData.data
+      )
       const fb = gl.createFramebuffer()
 
       gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
@@ -136,8 +165,8 @@ export default function ShadedImage({
 
       let buffers = initBuffers(gl)
       animate(canvas, gl, compiledShaders, texture, buffers)
-    })
-  }, [canvasRef, shaders, image])
+    }
+  }, [canvasRef, shaders, image, textureData])
 
   return (
     <div>
