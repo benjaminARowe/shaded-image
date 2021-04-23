@@ -129,7 +129,8 @@ let texture = null;
 
     if (image != null) {
       console.log('Using Image')
-      loadTexture(gl, image, (texture) => {
+      loadTexture(gl, image, (t) => {
+	texture = t;
         if (texture != null) {
           const fb = gl.createFramebuffer()
 
