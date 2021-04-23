@@ -17,6 +17,7 @@ export default function ShadedImage({
   textureData,
   values
 }) {
+  const [value, setValue] = useState(0) // integer state
   function init(canvas, gl) {
     /**
      * Provides requestAnimationFrame in a cross browser way.
@@ -97,10 +98,13 @@ export default function ShadedImage({
 
       // Draw the data from our buffers
       gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
+      console.log('Manually Rerendering')
+      setValue((value) => value + 1) // update the state to force render
     }
   }
 
   const canvasRef = useRef()
+  //const [texture, setTexture] = useState(null)
 
   useEffect(() => {
     let canvas = canvasRef.current
@@ -120,11 +124,42 @@ export default function ShadedImage({
         values: values
       })
     }
-    let texture = null
+
+let texture = null;
 
     if (image != null) {
       console.log('Using Image')
-      texture = loadTexture(gl, image, () => {
+      loadTexture(gl, image, (texture) => {
+        if (texture != null) {
+          const fb = gl.createFramebuffer()
+
+          gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
+
+          // attach the texture as the first color attachment
+          const attachmentPoint = gl.COLOR_ATTACHMENT0
+          gl.framebufferTexture2D(
+            gl.FRAMEBUFFER,
+            attachmentPoint,
+            gl.TEXTURE_2D,
+            texture.texture,
+            0
+          )
+
+          let buffers = initBuffers(gl)
+          animate(canvas, gl, compiledShaders, texture, buffers)
+        }
+      })
+    } else if (textureData != null) {
+	let texture = textureFromData(
+          gl,
+          textureData.width,
+          textureData.height,
+          textureData.data
+        )
+      console.log(textureData)
+	console.log(texture);
+      if (texture != null) {
+        console.log('Using Data Image')
         const fb = gl.createFramebuffer()
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
@@ -141,30 +176,7 @@ export default function ShadedImage({
 
         let buffers = initBuffers(gl)
         animate(canvas, gl, compiledShaders, texture, buffers)
-      })
-    } else if (textureData != null) {
-      texture = textureFromData(
-        gl,
-        textureData.width,
-        textureData.height,
-        textureData.data
-      )
-      const fb = gl.createFramebuffer()
-
-      gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
-
-      // attach the texture as the first color attachment
-      const attachmentPoint = gl.COLOR_ATTACHMENT0
-      gl.framebufferTexture2D(
-        gl.FRAMEBUFFER,
-        attachmentPoint,
-        gl.TEXTURE_2D,
-        texture.texture,
-        0
-      )
-
-      let buffers = initBuffers(gl)
-      animate(canvas, gl, compiledShaders, texture, buffers)
+      }
     }
   }, [canvasRef, shaders, image, textureData])
 
