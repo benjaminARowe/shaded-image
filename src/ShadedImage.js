@@ -179,7 +179,7 @@ let texture = null;
         animate(canvas, gl, compiledShaders, texture, buffers)
       }
     }
-  }, [canvasRef, shaders, image, textureData])
+  }, [canvasRef, shaders, image, JSON.stringify(textureData)])
 
   return (
     <div>
