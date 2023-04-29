@@ -1,100 +1,35 @@
-# shaded-image
+# \<si-shaded-image>
 
-> Apply a stack of post-processing style shaders to a static image 
+This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
 
-[![NPM](https://img.shields.io/npm/v/shaded-image.svg)](https://www.npmjs.com/package/shaded-image) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-
-## Install
+## Installation
 
 ```bash
-npm install --save shaded-image
+npm i si-shaded-image
 ```
 
 ## Usage
 
-### Inbuilt Components
-You can use one of the inbuilt effect components
+```html
+<script type="module">
+  import 'si-shaded-image/si-shaded-image.js';
+</script>
 
-```jsx
-import React from "react";
-import {GrayscaleImage} from "shaded-image";
-
-import test from "./download.jpeg";
-
-export default function Example() {
-  return (
-      <GrayscaleImage
-        image={test}
-      />
-  );
-}
+<si-shaded-image></si-shaded-image>
 ```
 
-### Custom Effects
-You can create your own custom effects by defining a glsl fragment and vertex shader. Uniform and Varying values can be set using initFunction and updateFunction
 
-#### vertex.glsl
-```glsl
-attribute vec3 aVertexPosition;
-attribute vec2 aTextureCoord;
 
-varying highp vec2 vTextureCoord;
+## Tooling configs
 
-void main(void) {
-	gl_Position =  vec4(aVertexPosition, 1.0);
-	vTextureCoord = aTextureCoord;
-}
+For most of the tools, the configuration is in the `package.json` to reduce the amount of files in your project.
 
+If you customize the configuration a lot, you can consider moving them to individual files.
+
+## Local Demo with `web-dev-server`
+
+```bash
+npm start
 ```
 
-#### fragmentGrayscale.glsl
-```glsl
-varying highp vec2 vTextureCoord;
-
-uniform sampler2D uSampler;
-
-void main(void) {
-	lowp vec4 tex = texture2D(uSampler, vTextureCoord);
-	lowp float col = (0.2126 * tex.r + 0.7152 * tex.g + 0.0722*tex.b);
-	gl_FragColor = vec4(col, col, col, tex.a);
-}
-
-```
-
-#### GrayscaleImage.js
-```jsx
-import React from "react";
-
-import {ShadedImage} from "shaded-image";
-/* eslint import/no-webpack-loader-syntax: off */
-import * as fragmentShader from "!raw-loader!glslify-loader!./shaders/fragmentGrayscale.glsl";
-
-/* eslint import/no-webpack-loader-syntax: off */
-import * as vertexShader from "!raw-loader!glslify-loader!./shaders/vertex.glsl";
-
-export default function GrayscaleImage({ style, className, image }) {
-  /* A list of shaders will be applied in order using a framebuffer */
-  const shaders = [
-    {
-      vertexShader: vertexShader.default,
-      fragmentShader: fragmentShader.default,
-      initFunction: (args) => {},
-      updateFunction: (args) => {},
-    }
-  ];
-  return (
-    <div className="App">
-      <ShadedImage
-        style={style}
-        className={className}
-        shaders={shaders}
-        image={image}
-      />
-    </div>
-  );
-}
-```
-
-## License
-
-MIT © [benjaminARowe](https://github.com/benjaminARowe)
+To run a local development server that serves the basic demo located in `demo/index.html`
