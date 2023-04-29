@@ -44,8 +44,9 @@ export class GreyscaleImage extends LitElement {
     },
   ];
   render() {
+    console.log(this.style);
     return html`<shaded-image
-      style=${this.style}
+      .style=${this.style.cssText}
       .shaders="${this.shaders}"
       .image=${this.image}
     ></shaded-image>`;

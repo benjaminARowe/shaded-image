@@ -5,7 +5,7 @@ import {
   CSSResultOrNative,
   PropertyValueMap,
 } from "lit";
-import { property, query } from "lit/decorators.js";
+import { property, query, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 
 import {
@@ -45,6 +45,9 @@ export class ShadedImage extends LitElement {
 
   @property()
   class: string = "";
+
+  @state()
+  texture: any = null;
 
   private _canvas: HTMLCanvasElement | null = null;
   set canvas(canvas: HTMLCanvasElement | null) {
@@ -105,6 +108,27 @@ export class ShadedImage extends LitElement {
     this.gl = this.canvas?.getContext("webgl") ?? null;
   }
 
+  glBuffers(texture: any) {
+    if (this.gl == null) return;
+    const gl = this.gl;
+    const fb = gl.createFramebuffer();
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+
+    // attach the texture as the first color attachment
+    const attachmentPoint = gl.COLOR_ATTACHMENT0;
+    gl.framebufferTexture2D(
+      gl.FRAMEBUFFER,
+      attachmentPoint,
+      gl.TEXTURE_2D,
+      texture?.texture,
+      0
+    );
+
+    let buffers = initBuffers(gl);
+    return buffers;
+  }
+
   init() {
     /**
      * Provides requestAnimationFrame in a cross browser way.
@@ -112,13 +136,17 @@ export class ShadedImage extends LitElement {
      */
 
     this.canvasSetup();
-    if (this.gl == null) return;
-    const gl = this.gl;
+    const { compiledShaders, buffers } = this.bind();
+    this.glAnimate(compiledShaders, buffers);
+  }
 
+  bind(): { compiledShaders: any; buffers: any } {
+    if (this.gl == null) throw "No gl context";
+    const gl = this.gl;
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LESS);
-    this.gl.enable(this.gl.BLEND);
+    gl.enable(gl.BLEND);
     this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -134,65 +162,41 @@ export class ShadedImage extends LitElement {
       });
     }
 
-    let texture = null;
-
     if (this.image != null) {
       console.log("Using Image");
       loadTexture(gl, this.image, (t: any) => {
-        texture = t;
-        if (texture != null) {
-          const fb = gl.createFramebuffer();
-
-          gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
-
-          // attach the texture as the first color attachment
-          const attachmentPoint = gl.COLOR_ATTACHMENT0;
-          gl.framebufferTexture2D(
-            gl.FRAMEBUFFER,
-            attachmentPoint,
-            gl.TEXTURE_2D,
-            texture?.texture,
-            0
-          );
-
-          let buffers = initBuffers(gl);
-          this.glAnimate(compiledShaders, texture, buffers);
+        this.texture = t;
+        if (this.texture != null) {
         }
       });
     } else if (this.textureData != null) {
-      let texture = textureFromData(
+      this.texture = textureFromData(
         gl,
         this.textureData.width,
         this.textureData.height,
         this.textureData.data
       );
       console.log(this.textureData);
-      console.log(texture);
-      if (texture != null) {
+      console.log(this.texture);
+      if (this.texture != null) {
         console.log("Using Data Image");
-        const fb = gl.createFramebuffer();
-
-        gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
-
-        // attach the texture as the first color attachment
-        const attachmentPoint = gl.COLOR_ATTACHMENT0;
-        gl.framebufferTexture2D(
-          gl.FRAMEBUFFER,
-          attachmentPoint,
-          gl.TEXTURE_2D,
-          texture.texture,
-          0
-        );
-
-        let buffers = initBuffers(gl);
-        this.glAnimate(compiledShaders, texture, buffers);
       }
     }
+    let buffers = this.glBuffers(this.texture);
+
+    return { compiledShaders, buffers };
   }
 
-  glAnimate(compiledShaders: any, texture: any, buffers: any) {
+  glAnimate(compiledShaders: any, buffers: any) {
+    if (this.gl == null) return;
+    const gl = this.gl;
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     this.resizeCanvas();
-    this.glRender(compiledShaders, texture, buffers);
+    this.glRender(compiledShaders, this.texture, buffers);
+
+    window.requestAnimationFrame(() => {
+      this.glAnimate(compiledShaders, buffers);
+    });
   }
 
   resizeCanvas() {
@@ -217,7 +221,6 @@ export class ShadedImage extends LitElement {
     const gl = this.gl;
     const canvas = this.gl;
     // const shaders = this.shaders;
-
     if (gl == null) return;
 
     gl.bindTexture(gl.TEXTURE_2D, texture?.texture);
@@ -231,7 +234,7 @@ export class ShadedImage extends LitElement {
         program: currentProgram.program,
         context: gl,
         canvas: canvas,
-        // values: values,
+        values: this.values,
       });
 
       // Bind buffers to the current program
@@ -249,6 +252,7 @@ export class ShadedImage extends LitElement {
   }
 
   render() {
+    console.log(this.style);
     return html` <div>
       <canvas class=${this.class} style=${this.style.cssText} />
     </div>`;

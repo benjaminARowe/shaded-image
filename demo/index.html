@@ -14,13 +14,23 @@
     <script type="module">
       import { html, render } from "lit";
       import "../dist/src/shaded-image-greyscale.js";
+      import "../dist/src/shaded-image-anim-test.js";
 
       const header = "Hello owc World!";
       render(
         html`
-          <shaded-image-greyscale image="./images.jpeg">
+          <shaded-image-greyscale
+            style="width: 186px; height: 140px;"
+            image="./images.jpeg"
+          >
             some light-dom
           </shaded-image-greyscale>
+          <shaded-image-anim-test
+            style="width: 186px; height: 140px;"
+            image="./images.jpeg"
+          >
+            some light-dom
+          </shaded-image-anim-test>
         `,
         document.querySelector("#demo")
       );
