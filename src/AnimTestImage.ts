@@ -42,17 +42,12 @@ export class AnimTestImage extends LitElement {
     {
       vertexShader: this.vertexShader,
       fragmentShader: this.fragmentShader,
-      initFunction: (args: any) => {
-        // const gl = args.context;
-        // const program = args.program;
-        // const timeLoc = gl.getUniformLocation(program, "time");
-        // gl.uniform1f(timeLoc, new Date().getTime());
-      },
+      initFunction: (args: any) => {},
       updateFunction: (args: any) => {
         const gl = args.context;
         const program = args.program;
         const timeLoc = gl.getUniformLocation(program, "time");
-        //console.log();
+
         gl.uniform1f(timeLoc, Number(Math.sin(new Date().getTime() / 1000)));
       },
     },

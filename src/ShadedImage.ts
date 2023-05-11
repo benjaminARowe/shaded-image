@@ -1,12 +1,5 @@
-import {
-  html,
-  css,
-  LitElement,
-  CSSResultOrNative,
-  PropertyValueMap,
-} from "lit";
-import { property, query, state } from "lit/decorators.js";
-import { styleMap } from "lit/directives/style-map.js";
+import { html, LitElement, PropertyValueMap } from "lit";
+import { property, state } from "lit/decorators.js";
 
 import {
   compileShader,
@@ -16,19 +9,14 @@ import {
   loadTexture,
   textureFromData,
 } from "./shaderUtils.js";
-interface Shader {
-  vertexShader: string;
-  fragmentShader: string;
-  initFunction: Function;
-  updateFunction: Function;
-  program: WebGLProgram | null;
-}
 
-interface TextureData {
-  width: number;
-  height: number;
-  data: Iterable<number>;
-}
+import {
+  Buffers,
+  CompiledShader,
+  Shader,
+  Texture,
+  TextureData,
+} from "./types.js";
 
 export class ShadedImage extends LitElement {
   @property()
@@ -47,7 +35,7 @@ export class ShadedImage extends LitElement {
   class: string = "";
 
   @state()
-  texture: any = null;
+  texture: Texture = { texture: null };
 
   private _canvas: HTMLCanvasElement | null = null;
   set canvas(canvas: HTMLCanvasElement | null) {
@@ -108,8 +96,9 @@ export class ShadedImage extends LitElement {
     this.gl = this.canvas?.getContext("webgl") ?? null;
   }
 
-  glBuffers(texture: any) {
+  glBuffers(texture: Texture) {
     if (this.gl == null) return;
+
     const gl = this.gl;
     const fb = gl.createFramebuffer();
 
@@ -130,17 +119,12 @@ export class ShadedImage extends LitElement {
   }
 
   init() {
-    /**
-     * Provides requestAnimationFrame in a cross browser way.
-     * paulirish.com/2011/requestanimationframe-for-smart-animating/
-     */
-
     this.canvasSetup();
     const { compiledShaders, buffers } = this.bind();
     this.glAnimate(compiledShaders, buffers);
   }
 
-  bind(): { compiledShaders: any; buffers: any } {
+  bind(): { compiledShaders: Array<CompiledShader>; buffers?: Buffers } {
     if (this.gl == null) throw "No gl context";
     const gl = this.gl;
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -164,7 +148,7 @@ export class ShadedImage extends LitElement {
 
     if (this.image != null) {
       console.log("Using Image");
-      loadTexture(gl, this.image, (t: any) => {
+      loadTexture(gl, this.image, (t: Texture) => {
         this.texture = t;
         if (this.texture != null) {
         }
@@ -187,8 +171,10 @@ export class ShadedImage extends LitElement {
     return { compiledShaders, buffers };
   }
 
-  glAnimate(compiledShaders: any, buffers: any) {
+  glAnimate(compiledShaders: Array<CompiledShader>, buffers?: Buffers) {
     if (this.gl == null) return;
+    if (buffers == undefined) return;
+
     const gl = this.gl;
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     this.resizeCanvas();
@@ -217,7 +203,7 @@ export class ShadedImage extends LitElement {
     }
   }
 
-  glRender(shaders: any, texture: any, buffers: any) {
+  glRender(shaders: Array<CompiledShader>, texture: Texture, buffers: Buffers) {
     const gl = this.gl;
     const canvas = this.gl;
     // const shaders = this.shaders;
