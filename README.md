@@ -1,13 +1,16 @@
 # shaded-image
 
-> Apply a stack of post-processing style shaders to a static image
+Apply a stack of post-processing style shaders to a static image
+
+> **Note**
+> When using React, I recommend using the React component wrapper [shaded-image-react](https://www.npmjs.com/package/shaded-image-react)
 
 [![NPM](https://img.shields.io/npm/v/shaded-image.svg)](https://www.npmjs.com/package/shaded-image) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## Install
 
 ```bash
-npm install --save shaded-image
+npm install shaded-image
 ```
 
 ## Usage
@@ -16,84 +19,83 @@ npm install --save shaded-image
 
 You can use one of the inbuilt effect components
 
-```jsx
-import React from "react";
-import { GrayscaleImage } from "shaded-image";
+```html
+<head>
+  <script type="module">
+    import "shaded-image";
+  </script>
+</head>
+<body>
+  <div style="display: flex">
+    <si-greyscale-image image="./image.svg" class="logo" />
+  </div>
+</body>
+```
 
-import test from "./download.jpeg";
-
-export default function Example() {
-  return <GrayscaleImage image={test} />;
-}
+```html
+<head>
+  <script type="module">
+    import "shaded-image";
+  </script>
+</head>
+<body>
+  <div style="display: flex">
+    <si-anim-test-image image="./image.svg" class="logo" />
+  </div>
+</body>
+`;
 ```
 
 ### Custom Effects
 
 You can create your own custom effects by defining a glsl fragment and vertex shader. Uniform and Varying values can be set using initFunction and updateFunction
 
-#### vertex.glsl
-
-```glsl
-attribute vec3 aVertexPosition;
-attribute vec2 aTextureCoord;
-
-varying highp vec2 vTextureCoord;
-
-void main(void) {
-	gl_Position =  vec4(aVertexPosition, 1.0);
-	vTextureCoord = aTextureCoord;
-}
-
-```
-
-#### fragmentGrayscale.glsl
-
-```glsl
-varying highp vec2 vTextureCoord;
-
-uniform sampler2D uSampler;
-
-void main(void) {
-	lowp vec4 tex = texture2D(uSampler, vTextureCoord);
-	lowp float col = (0.2126 * tex.r + 0.7152 * tex.g + 0.0722*tex.b);
-	gl_FragColor = vec4(col, col, col, tex.a);
-}
-
-```
-
 #### GrayscaleImage.js
 
-```jsx
-import React from "react";
+```html
+<head>
+  <script type="module">
+    import "shaded-image";
+    const fragmentShader = `
+      varying highp vec2 vTextureCoord;
+      uniform sampler2D uSampler;
 
-import { ShadedImage } from "shaded-image";
-/* eslint import/no-webpack-loader-syntax: off */
-import * as fragmentShader from "!raw-loader!glslify-loader!./shaders/fragmentGrayscale.glsl";
+      void main(void) {
+      	lowp vec4 tex = texture2D(uSampler, vTextureCoord);
+      	lowp float col = (0.2126 * tex.r + 0.7152 * tex.g + 0.0722*tex.b);
+      	gl_FragColor = vec4(col, col, col, tex.a);
+      }
 
-/* eslint import/no-webpack-loader-syntax: off */
-import * as vertexShader from "!raw-loader!glslify-loader!./shaders/vertex.glsl";
+      `;
+    const vertexShader = `
+      attribute vec3 aVertexPosition;
+      attribute vec2 aTextureCoord;
 
-export default function GrayscaleImage({ style, className, image }) {
-  /* A list of shaders will be applied in order using a framebuffer */
-  const shaders = [
-    {
-      vertexShader: vertexShader.default,
-      fragmentShader: fragmentShader.default,
-      initFunction: (args) => {},
-      updateFunction: (args) => {},
-    },
-  ];
-  return (
-    <div className="App">
-      <ShadedImage
-        style={style}
-        className={className}
-        shaders={shaders}
-        image={image}
-      />
-    </div>
-  );
-}
+      varying highp vec2 vTextureCoord;
+
+      void main(void) {
+      	gl_Position =  vec4(aVertexPosition.xy, 0.0, 1.0);
+      	vTextureCoord = aTextureCoord;
+      }
+    `;
+    const shaders = [
+      {
+        vertexShader: vertexShader,
+        fragmentShader: fragmentShader,
+        initFunction: (args) => {},
+        updateFunction: (args) => {},
+      },
+    ];
+
+    const greyImage = document.querySelector("#example");
+    greyImage.shaders = shaders;
+  </script>
+</head>
+<body>
+  <div style="display: flex">
+    <si-shaded-image id="example" image="./image.svg" class="logo" />
+  </div>
+</body>
 ```
 
 ## License

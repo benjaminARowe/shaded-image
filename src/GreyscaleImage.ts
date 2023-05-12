@@ -9,7 +9,7 @@ import { property, query, customElement } from "lit/decorators.js";
 
 import "./ShadedImage.js";
 
-@customElement("shaded-image-greyscale")
+@customElement("si-greyscale-image")
 export class GreyscaleImage extends LitElement {
   @property()
   image: string | null = null;
@@ -49,11 +49,10 @@ export class GreyscaleImage extends LitElement {
   ];
   render() {
     console.log(this.style);
-    return html`<shaded-image
-      style="width:100%;height:100%;"
+    return html`<si-shaded-image
       .class=${this.class}
       .shaders="${this.shaders}"
       .image=${this.image}
-    ></shaded-image>`;
+    ></si-shaded-image>`;
   }
 }

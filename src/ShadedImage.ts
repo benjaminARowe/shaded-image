@@ -18,7 +18,7 @@ import {
   TextureData,
 } from "./types.js";
 
-@customElement("shaded-image")
+@customElement("si-shaded-image")
 export class ShadedImage extends LitElement {
   @property()
   shaders: Array<Shader> = [];
@@ -250,7 +250,7 @@ export class ShadedImage extends LitElement {
 
   render() {
     console.log(this.style);
-    return html`<div style="width:100%;height:100%;">
+    return html`<div style="width:100%;height:100%;display:flex;">
       <canvas style="width:100%;height:100%;" />
     </div> `;
   }

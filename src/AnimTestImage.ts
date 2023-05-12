@@ -9,7 +9,7 @@ import { customElement, property, query } from "lit/decorators.js";
 
 import "./ShadedImage.js";
 
-@customElement("shaded-image-anim-test")
+@customElement("si-anim-test-image")
 export class AnimTestImage extends LitElement {
   @property()
   image: string | null = null;
@@ -58,11 +58,11 @@ export class AnimTestImage extends LitElement {
   ];
   render() {
     console.log(this.style);
-    return html`<shaded-image
+    return html`<si-shaded-image
       style="width:100%;height:100%;"
       .class=${this.class}
       .shaders="${this.shaders}"
       .image=${this.image}
-    ></shaded-image>`;
+    ></si-shaded-image>`;
   }
 }

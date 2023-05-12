@@ -19,28 +19,28 @@
       const header = "Hello owc World!";
       render(
         html`
-          <shaded-image-greyscale
+          <si-greyscale-image
        
             image="./images.jpeg"
           >
             some light-dom
-          </shaded-image-greyscale>
-          <shaded-image-anim-test
-            style="width: 186px; height: 140px;"
+          </si-greyscale-image>
+          <si-anim-test-image
+            style="width: 500px;"
             image="./images.jpeg"
           >
             some light-dom
-          </shaded-image-anim-test>
+          </si-anim-test-image>
         `,
         document.querySelector("#demo")
       );
     </script>
     <div style="display:flex">
-    <shaded-image-anim-test
+    <si-anim-test-image
       style="width: 186px; height: 140px"
       image="./images.jpeg"
     >
   </div>
-    </shaded-image-anim-test>
+    </si-anim-test-image>
   </body>
 </html>
