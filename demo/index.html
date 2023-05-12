@@ -9,18 +9,18 @@
     </style>
   </head>
   <body>
-    <div id="demo"></div>
+    <div id="demo" style="display: flex"></div>
 
     <script type="module">
       import { html, render } from "lit";
-      import "../dist/src/shaded-image-greyscale.js";
-      import "../dist/src/shaded-image-anim-test.js";
+      import "../dist/src/GreyscaleImage.js";
+      import "../dist/src/AnimTestImage.js";
 
       const header = "Hello owc World!";
       render(
         html`
           <shaded-image-greyscale
-            style="width: 186px; height: 140px;"
+       
             image="./images.jpeg"
           >
             some light-dom
@@ -35,10 +35,12 @@
         document.querySelector("#demo")
       );
     </script>
+    <div style="display:flex">
     <shaded-image-anim-test
       style="width: 186px; height: 140px"
       image="./images.jpeg"
     >
+  </div>
     </shaded-image-anim-test>
   </body>
 </html>

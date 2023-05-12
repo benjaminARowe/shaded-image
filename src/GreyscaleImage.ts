@@ -5,13 +5,17 @@ import {
   CSSResultOrNative,
   PropertyValueMap,
 } from "lit";
-import { property, query } from "lit/decorators.js";
+import { property, query, customElement } from "lit/decorators.js";
 
-import "./shaded-image.js";
+import "./ShadedImage.js";
 
+@customElement("shaded-image-greyscale")
 export class GreyscaleImage extends LitElement {
   @property()
   image: string | null = null;
+
+  @property()
+  class: string = "";
 
   private fragmentShader = `
       varying highp vec2 vTextureCoord;
@@ -46,7 +50,8 @@ export class GreyscaleImage extends LitElement {
   render() {
     console.log(this.style);
     return html`<shaded-image
-      .style=${this.style.cssText}
+      style="width:100%;height:100%;"
+      .class=${this.class}
       .shaders="${this.shaders}"
       .image=${this.image}
     ></shaded-image>`;

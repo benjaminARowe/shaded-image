@@ -1,15 +1,17 @@
 {
-  "name": "si-shaded-image",
-  "description": "Webcomponent si-shaded-image following open-wc recommendations",
+  "name": "shaded-image",
+  "version": "2.0.0",
+  "description": "Apply a shader stack to a static image",
+  "author": "benjaminarowe",
   "license": "MIT",
-  "author": "si-shaded-image",
-  "version": "0.0.0",
   "type": "module",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",
   "exports": {
     ".": "./dist/src/index.js",
-    "./si-shaded-image.js": "./dist/src/si-shaded-image.js"
+    "./shaded-image-anim-test": "./dist/src/AnimTestImage.js",
+    "./shaded-image": "./dist/src/ShadedImage.js",
+    "./shaded-image-greyscale": "./dist/src/GreyscaleImage.js"
   },
   "scripts": {
     "analyze": "cem analyze --litelement",

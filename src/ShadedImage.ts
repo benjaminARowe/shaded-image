@@ -1,5 +1,5 @@
 import { html, LitElement, PropertyValueMap } from "lit";
-import { property, state } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 
 import {
   compileShader,
@@ -18,6 +18,7 @@ import {
   TextureData,
 } from "./types.js";
 
+@customElement("shaded-image")
 export class ShadedImage extends LitElement {
   @property()
   shaders: Array<Shader> = [];
@@ -94,6 +95,8 @@ export class ShadedImage extends LitElement {
     const c = this.renderRoot?.querySelector("canvas") ?? null;
     this.canvas = c;
     this.gl = this.canvas?.getContext("webgl") ?? null;
+    if (!this.gl) return;
+    this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
   }
 
   glBuffers(texture: Texture) {
@@ -127,7 +130,7 @@ export class ShadedImage extends LitElement {
   bind(): { compiledShaders: Array<CompiledShader>; buffers?: Buffers } {
     if (this.gl == null) throw "No gl context";
     const gl = this.gl;
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 0.0);
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LESS);
     gl.enable(gl.BLEND);
@@ -148,7 +151,7 @@ export class ShadedImage extends LitElement {
 
     if (this.image != null) {
       console.log("Using Image");
-      loadTexture(gl, this.image, (t: Texture) => {
+      loadTexture(gl, this.image, (t: Texture, image: HTMLImageElement) => {
         this.texture = t;
         if (this.texture != null) {
         }
@@ -196,8 +199,16 @@ export class ShadedImage extends LitElement {
       canvas.width !== canvas.clientWidth ||
       canvas.height !== canvas.clientHeight
     ) {
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
+      //canvas.width = canvas.clientWidth;
+      //canvas.height = canvas.clientHeight;
+
+      if (this.textureData) {
+        canvas.width = this?.textureData.width;
+        canvas.height = this?.textureData.height;
+      } else if (this.texture && this.texture.image) {
+        canvas.width = this?.texture?.image.width;
+        canvas.height = this?.texture?.image.height;
+      }
 
       gl.viewport(0, 0, canvas.width, canvas.height);
     }
@@ -239,9 +250,9 @@ export class ShadedImage extends LitElement {
 
   render() {
     console.log(this.style);
-    return html` <div>
-      <canvas class=${this.class} style=${this.style.cssText} />
-    </div>`;
+    return html`<div style="width:100%;height:100%;">
+      <canvas style="width:100%;height:100%;" />
+    </div> `;
   }
 
   firstUpdated(changedProperties: PropertyValueMap<any>) {
